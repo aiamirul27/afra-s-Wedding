@@ -218,6 +218,7 @@
   td input[type=text], td input[type=number], td input[type=date], td select{
     width:100%;min-width:90px;border:1px solid transparent;background:transparent;padding:5px 6px;
   }
+  td input.f-name{min-width:160px;}
   td input:focus, td select:focus{border-color:var(--line);background:var(--ivory-2);outline:none;}
   .pill{
     display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;
@@ -384,12 +385,13 @@
         <button class="btn secondary import-csv">Import from CSV</button>
         <input type="file" class="csv-file-input" accept=".csv,text/csv" style="display:none;">
         <button class="btn secondary import-contacts">Import from Google Contacts</button>
+        <button class="btn secondary delete-selected" disabled style="opacity:0.5;">Delete selected</button>
         <button class="btn add-guest">+ Add guest</button>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
+            <th style="width:28px;"><input type="checkbox" class="select-all-guests"></th><th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
           </tr></thead>
           <tbody class="guests-body"></tbody>
         </table>
@@ -410,12 +412,13 @@
         <button class="btn secondary import-csv">Import from CSV</button>
         <input type="file" class="csv-file-input" accept=".csv,text/csv" style="display:none;">
         <button class="btn secondary import-contacts">Import from Google Contacts</button>
+        <button class="btn secondary delete-selected" disabled style="opacity:0.5;">Delete selected</button>
         <button class="btn add-guest">+ Add guest</button>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
+            <th style="width:28px;"><input type="checkbox" class="select-all-guests"></th><th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
           </tr></thead>
           <tbody class="guests-body"></tbody>
         </table>
@@ -562,6 +565,16 @@
   var apiUrl = localStorage.getItem(API_URL_KEY) || DEFAULT_API_URL;
   var state = { guestsHolud: {}, guestsReception: {}, budget: {}, tasks: {}, vendors: {} };
   var guestFilters = { Holud: {search:'', side:''}, Reception: {search:'', side:''} };
+  var selectedGuests = { Holud: {}, Reception: {} };
+
+  function updateDeleteSelectedLabel(eventKey){
+    var panel = document.getElementById('guestlist-' + eventKey);
+    var count = Object.keys(selectedGuests[eventKey]).length;
+    var btn = panel.querySelector('.delete-selected');
+    btn.textContent = count ? ('Delete selected (' + count + ')') : 'Delete selected';
+    btn.disabled = !count;
+    btn.style.opacity = count ? '1' : '0.5';
+  }
   var POLL_MS = 6000;
   var pollTimer = null;
   var COLLECTIONS = ['guestsHolud','guestsReception','budget','tasks','vendors'];
@@ -734,6 +747,21 @@
     });
   }
 
+  function bulkDeleteDocs(collection, ids, eventKey){
+    if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); return; }
+    ensurePin(function(){
+      apiCall('bulkDelete', collection, {ids:ids, pin:editPin}).then(function(res){
+        if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ bulkDeleteDocs(collection, ids, eventKey); }); }
+        else if(res && typeof res.count === 'number'){
+          toast(res.count + ' guest' + (res.count === 1 ? '' : 's') + ' deleted.');
+          if(eventKey) selectedGuests[eventKey] = {};
+          loadCollection(collection);
+        }
+        else { toast('Delete failed — try again.'); }
+      });
+    });
+  }
+
   function requestGoogleContacts(onToken){
     if(!googleClientId){ toast('Add your Google Client ID in Settings first.'); openSettings(); return; }
     if(!window.google || !google.accounts || !google.accounts.oauth2){
@@ -772,6 +800,7 @@
 
   // ---------- CSV import (e.g. exported from Google Contacts) ----------
   function parseCSV(text){
+    if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM Google's CSV export adds
     var rows = [], row = [], field = '', inQuotes = false;
     var i = 0, len = text.length;
     while(i < len){
@@ -989,6 +1018,21 @@
     panel.querySelector('.guest-filter-side').addEventListener('change', function(e){
       guestFilters[eventKey].side = e.target.value; renderGuestList(eventKey);
     });
+    panel.querySelector('.select-all-guests').addEventListener('change', function(e){
+      var checked = e.target.checked;
+      panel.querySelectorAll('.row-select').forEach(function(cb){
+        cb.checked = checked;
+        var id = cb.dataset.id;
+        if(checked) selectedGuests[eventKey][id] = true; else delete selectedGuests[eventKey][id];
+      });
+      updateDeleteSelectedLabel(eventKey);
+    });
+    panel.querySelector('.delete-selected').addEventListener('click', function(){
+      var ids = Object.keys(selectedGuests[eventKey]);
+      if(!ids.length) return;
+      if(!confirm('Delete ' + ids.length + ' selected guest' + (ids.length === 1 ? '' : 's') + '?')) return;
+      bulkDeleteDocs('guests' + eventKey, ids, eventKey);
+    });
     panel.querySelector('.add-guest').addEventListener('click', function(){
       addDoc('guests' + eventKey, {name:'New guest', side:'Bride', group:'', phone:'', headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:''});
     });
@@ -1035,10 +1079,14 @@
       return matchesSearch && matchesSide;
     });
     entries.sort(function(a,b){ return (a[1].name||'').localeCompare(b[1].name||''); });
+    Object.keys(selectedGuests[eventKey]).forEach(function(id){
+      if(!state[collection][id]) delete selectedGuests[eventKey][id];
+    });
     panel.querySelector('.guests-empty').style.display = entries.length ? 'none' : 'block';
     body.innerHTML = entries.map(function(e){
       var id = e[0], g = e[1];
       return '<tr data-id="'+id+'">' +
+        '<td><input type="checkbox" class="row-select" data-id="'+id+'" '+(selectedGuests[eventKey][id] ? 'checked' : '')+'></td>' +
         '<td><input type="text" class="f-name" value="'+esc(g.name)+'"></td>' +
         '<td><select class="f-side"><option value="Bride"'+(g.side==='Bride'?' selected':'')+'>Bride\'s side</option><option value="Groom"'+(g.side==='Groom'?' selected':'')+'>Groom\'s side</option></select></td>' +
         '<td><input type="text" class="f-group" list="group-options" value="'+esc(g.group)+'" placeholder="e.g. Relatives"></td>' +
@@ -1071,7 +1119,16 @@
           updateDoc(collection, id, (function(){ var o={}; o[key]=Math.max(0, Number(input.value)||0); return o; })());
         });
       });
+      var selectCb = tr.querySelector('.row-select');
+      if(selectCb){
+        selectCb.addEventListener('change', function(){
+          if(selectCb.checked) selectedGuests[eventKey][id] = true;
+          else delete selectedGuests[eventKey][id];
+          updateDeleteSelectedLabel(eventKey);
+        });
+      }
     });
+    updateDeleteSelectedLabel(eventKey);
 
     var totalSelf = entries.reduce(function(s,e){ return s + (e[1].headcountSelf!==undefined?Number(e[1].headcountSelf):1); }, 0);
     var totalDriver = entries.reduce(function(s,e){ return s + (Number(e[1].headcountDriver)||0); }, 0);
