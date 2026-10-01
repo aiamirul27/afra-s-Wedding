@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Afra &amp; Asrar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#5B1A2E;
+    --maroon-deep:#3E1120;
+    --gold:#C98A2C;
+    --gold-light:#E3A73C;
+    --ivory:#F3E6CE;
+    --ivory-2:#FBF6EA;
+    --ink:#2B1420;
+    --sage:#5C7A5C;
+    --line:rgba(43,20,32,0.14);
+    --white:#FFFDF9;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--ivory-2);
+    color:var(--ink);
+    font-family:'Karla',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ivory-2:#221319;
+      --ivory:#2C1A22;
+      --ink:#F3E6CE;
+      --white:#2C1A22;
+      --line:rgba(243,230,206,0.16);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ivory-2:#221319;
+    --ivory:#2C1A22;
+    --ink:#F3E6CE;
+    --white:#2C1A22;
+    --line:rgba(243,230,206,0.16);
+  }
+  h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;}
+  a{color:inherit;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:
+      radial-gradient(ellipse 120% 90% at 15% -10%, rgba(201,138,44,0.28), transparent 60%),
+      linear-gradient(180deg, var(--maroon) 0%, var(--maroon-deep) 100%);
+    color:var(--ivory-2);
+    padding:56px 24px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-inner{max-width:1000px;margin:0 auto;position:relative;}
+  .hero-kicker{
+    font-size:14px;
+    letter-spacing:0.02em;
+    color:var(--gold-light);
+    margin:0 0 6px;
+  }
+  .hero-names{
+    font-size:clamp(42px,8vw,76px);
+    font-weight:500;
+    line-height:1.02;
+    margin:0;
+    color:#FBF6EA;
+  }
+  .hero-amp{
+    color:var(--gold-light);
+    font-style:italic;
+    padding:0 8px;
+  }
+  .hero-sub{
+    max-width:520px;
+    font-size:16px;
+    line-height:1.6;
+    color:rgba(251,246,234,0.82);
+    margin:14px 0 0;
+  }
+  .hero-rule{
+    width:64px;height:2px;background:var(--gold);
+    margin:22px 0 22px;border:none;
+  }
+  .event-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media(max-width:620px){.event-row{grid-template-columns:1fr;}}
+  .event-card{
+    background:rgba(251,246,234,0.07);
+    border:1px solid rgba(251,246,234,0.18);
+    border-radius:4px;
+    padding:20px 22px;
+  }
+  .event-card.holud{border-left:3px solid var(--gold-light);}
+  .event-card.reception{border-left:3px solid #D9C7A0;}
+  .event-name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;
+    margin:0 0 4px;
+    color:#FBF6EA;
+  }
+  .event-meta{font-size:14px;color:rgba(251,246,234,0.72);margin:0 0 14px;}
+  .countdown{display:flex;gap:14px;}
+  .countdown .num{
+    font-family:'Cormorant Garamond',serif;
+    font-size:30px;font-weight:600;
+    color:var(--gold-light);
+    line-height:1;
+  }
+  .countdown .lab{font-size:11px;color:rgba(251,246,234,0.6);margin-top:3px;}
+
+  /* ---------- Tabs ---------- */
+  .tabbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--ivory-2);
+    border-bottom:1px solid var(--line);
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .tabbar-inner{
+    max-width:1000px;margin:0 auto;
+    display:flex;gap:4px;
+    overflow-x:auto;
+    padding:0 20px;
+  }
+  .tab-btn{
+    appearance:none;border:none;background:none;
+    font-family:'Karla',sans-serif;font-size:15px;font-weight:600;
+    color:var(--ink);opacity:0.5;
+    padding:16px 12px 13px;
+    cursor:pointer;white-space:nowrap;
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{opacity:1;border-bottom-color:var(--maroon);color:var(--maroon);}
+  :root[data-theme="dark"] .tab-btn.active{color:var(--gold-light);border-bottom-color:var(--gold-light);}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .tab-btn.active{color:var(--gold-light);border-bottom-color:var(--gold-light);}
+  }
+
+  main{max-width:1000px;margin:0 auto;padding:28px 20px 80px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* ---------- Overview stats ---------- */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:30px;}
+  @media(max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+  .stat{
+    background:var(--white);border:1px solid var(--line);border-radius:4px;
+    padding:18px 18px 16px;
+  }
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--maroon);line-height:1;}
+  :root[data-theme="dark"] .stat .n{color:var(--gold-light);}
+  .stat .l{font-size:13px;color:var(--ink);opacity:0.65;margin-top:6px;}
+
+  .subtabbar{display:flex;gap:8px;margin-bottom:18px;}
+  .subtab-btn{
+    appearance:none;font-family:'Karla',sans-serif;font-size:13px;font-weight:600;
+    border:1px solid var(--line);background:var(--white);color:var(--ink);opacity:0.65;
+    padding:7px 14px;border-radius:20px;cursor:pointer;
+  }
+  .subtab-btn.active{opacity:1;background:var(--maroon);border-color:var(--maroon);color:#FBF6EA;}
+  :root[data-theme="dark"] .subtab-btn.active{background:var(--gold);border-color:var(--gold);color:#2B1420;}
+  .event-guest-panel{display:none;}
+  .event-guest-panel.active{display:block;}
+
+  h2.section-title{
+    font-size:22px;font-weight:600;margin:0 0 4px;
+  }
+  .section-sub{font-size:14px;opacity:0.6;margin:0 0 18px;}
+
+  /* ---------- Controls row ---------- */
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+  input[type=text], input[type=search], select, input[type=date], input[type=number]{
+    font-family:'Karla',sans-serif;font-size:14px;
+    border:1px solid var(--line);border-radius:4px;
+    background:var(--white);color:var(--ink);
+    padding:9px 11px;
+  }
+  .btn{
+    font-family:'Karla',sans-serif;font-size:14px;font-weight:600;
+    border-radius:4px;border:1px solid var(--maroon);
+    padding:9px 16px;cursor:pointer;
+    background:var(--maroon);color:#FBF6EA;
+  }
+  .btn:hover{background:var(--maroon-deep);}
+  .btn.secondary{background:transparent;color:var(--maroon);}
+  :root[data-theme="dark"] .btn.secondary{color:var(--gold-light);border-color:var(--gold-light);}
+  :root[data-theme="dark"] .btn{background:var(--gold);border-color:var(--gold);color:#2B1420;}
+  .btn.small{padding:5px 10px;font-size:12px;}
+  .btn.ghost{background:none;border:none;color:var(--maroon);opacity:0.7;padding:4px 6px;}
+  :root[data-theme="dark"] .btn.ghost{color:var(--gold-light);}
+  .spacer{flex:1;}
+
+  /* ---------- Table ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--white);}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px;}
+  th{
+    text-align:left;font-weight:600;font-size:12px;
+    color:var(--ink);opacity:0.55;
+    padding:12px 14px;border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  td input[type=text], td input[type=number], td input[type=date], td select{
+    width:100%;min-width:90px;border:1px solid transparent;background:transparent;padding:5px 6px;
+  }
+  td input:focus, td select:focus{border-color:var(--line);background:var(--ivory-2);outline:none;}
+  .pill{
+    display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;
+  }
+  .pill.confirmed{background:rgba(92,122,92,0.18);color:var(--sage);}
+  .pill.pending{background:rgba(201,138,44,0.2);color:#8A6013;}
+  .pill.declined{background:rgba(91,26,46,0.14);color:var(--maroon);}
+  :root[data-theme="dark"] .pill.declined{color:#e39ab0;}
+  input[type=checkbox]{width:17px;height:17px;accent-color:var(--maroon);cursor:pointer;}
+
+  .empty{padding:40px 20px;text-align:center;opacity:0.55;font-size:14px;}
+
+  /* ---------- Vendor cards ---------- */
+  .vendor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+  .vcard{background:var(--white);border:1px solid var(--line);border-radius:4px;padding:16px;}
+  .vcard h3{margin:0 0 2px;font-size:19px;}
+  .vcard .cat{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:8px;}
+  .vcard .contact{font-size:13px;opacity:0.75;margin-bottom:6px;}
+  .vcard .notes{font-size:13px;opacity:0.65;line-height:1.4;}
+  .vcard .row-actions{margin-top:10px;}
+
+  .row-actions{display:flex;gap:4px;justify-content:flex-end;}
+
+  footer{max-width:1000px;margin:0 auto;padding:20px 20px 40px;font-size:12px;opacity:0.45;text-align:center;}
+
+  .toast{
+    position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+    background:var(--maroon-deep);color:#FBF6EA;padding:10px 18px;border-radius:6px;
+    font-size:13px;opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:50;
+  }
+  .toast.show{opacity:1;}
+
+  .readonly-badge{
+    font-size:12px;background:rgba(201,138,44,0.2);color:#8A6013;padding:4px 10px;border-radius:20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-kicker">A wedding celebration</p>
+    <h1 class="hero-names">Afra Atiha<span class="hero-amp">&amp;</span>Asrar Bin Islam</h1>
+    <p class="hero-sub">Two days, two ceremonies — planned together, right here.</p>
+    <hr class="hero-rule">
+    <div class="event-row">
+      <div class="event-card holud">
+        <p class="event-name">Gaye Holud</p>
+        <p class="event-meta">16 December · Army Officers' Club</p>
+        <div class="countdown" id="cd-holud"></div>
+      </div>
+      <div class="event-card reception">
+        <p class="event-name">Reception</p>
+        <p class="event-meta">18 December · Sena Prangon</p>
+        <div class="countdown" id="cd-reception"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <div class="tabbar-inner" style="align-items:center;">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="guests">Guests</button>
+    <button class="tab-btn" data-tab="budget">Budget</button>
+    <button class="tab-btn" data-tab="tasks">Tasks</button>
+    <button class="tab-btn" data-tab="vendors">Vendors</button>
+    <div class="spacer"></div>
+    <span id="conn-dot" title="Not connected" style="width:8px;height:8px;border-radius:50%;background:#B8433F;display:inline-block;margin-right:6px;flex:0 0 auto;"></span>
+    <button class="btn ghost" id="open-settings" style="opacity:1;font-size:13px;">Settings</button>
+  </div>
+</div>
+
+<div id="settings-overlay" style="display:none;position:fixed;inset:0;background:rgba(43,20,32,0.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--white);border-radius:6px;max-width:460px;width:100%;padding:26px;">
+    <h2 style="margin:0 0 6px;font-size:22px;">Connect your Google Sheet</h2>
+    <p style="font-size:13px;opacity:0.7;margin:0 0 16px;line-height:1.5;">Paste the Apps Script web app URL from your deployed Google Sheet backend. See the setup guide that came with this file for how to get this link.</p>
+    <input type="text" id="settings-url" placeholder="https://script.google.com/macros/s/…/exec" style="width:100%;margin-bottom:14px;">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn secondary" id="settings-cancel">Cancel</button>
+      <button class="btn" id="settings-save">Save & connect</button>
+    </div>
+  </div>
+</div>
+
+<div id="pin-overlay" style="display:none;position:fixed;inset:0;background:rgba(43,20,32,0.5);z-index:70;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--white);border-radius:6px;max-width:360px;width:100%;padding:26px;">
+    <h2 style="margin:0 0 6px;font-size:22px;">Enter edit PIN</h2>
+    <p style="font-size:13px;opacity:0.7;margin:0 0 14px;line-height:1.5;">Ask whoever set up this app for the PIN to add or change entries. Viewing doesn't need one.</p>
+    <input type="text" id="pin-input" inputmode="numeric" placeholder="PIN" style="width:100%;margin-bottom:8px;">
+    <p id="pin-error" style="color:#B8433F;font-size:12px;margin:0 0 12px;display:none;">Incorrect PIN — try again.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn secondary" id="pin-cancel">Cancel</button>
+      <button class="btn" id="pin-submit">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section class="panel active" id="panel-overview">
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat"><div class="n" id="stat-guests-holud">–</div><div class="l">Gaye Holud invitations</div></div>
+      <div class="stat"><div class="n" id="stat-guests-reception">–</div><div class="l">Reception invitations</div></div>
+      <div class="stat"><div class="n" id="stat-drivers-holud">–</div><div class="l">Gaye Holud drivers</div></div>
+      <div class="stat"><div class="n" id="stat-drivers-reception">–</div><div class="l">Reception drivers</div></div>
+      <div class="stat"><div class="n" id="stat-budget">–</div><div class="l">Of budget spent</div></div>
+      <div class="stat"><div class="n" id="stat-tasks">–</div><div class="l">Tasks completed</div></div>
+    </div>
+
+    <h2 class="section-title">Invitation cards by group</h2>
+    <p class="section-sub">One card per guest entry — how many to print and deliver, by group.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Gaye Holud</th><th>Reception</th><th>Total cards</th></tr></thead>
+        <tbody id="group-breakdown-body"></tbody>
+      </table>
+      <div class="empty" id="group-breakdown-empty" style="display:none;">Add guests with a group to see the breakdown here.</div>
+    </div>
+  </section>
+
+  <!-- GUESTS -->
+  <section class="panel" id="panel-guests">
+    <h2 class="section-title">Guest list</h2>
+    <p class="section-sub">Gaye Holud and the Reception keep separate lists.</p>
+
+    <div class="subtabbar">
+      <button class="subtab-btn active" data-event="Holud">Gaye Holud</button>
+      <button class="subtab-btn" data-event="Reception">Reception</button>
+    </div>
+
+    <div class="event-guest-panel active" id="guestlist-Holud" data-event="Holud">
+      <div class="controls">
+        <input type="search" class="guest-search" placeholder="Search guests…">
+        <select class="guest-filter-side">
+          <option value="">All sides</option>
+          <option value="Bride">Bride's side</option>
+          <option value="Groom">Groom's side</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="guests-totals" style="font-size:13px;opacity:0.65;"></span>
+        <button class="btn add-guest">+ Add guest</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
+          </tr></thead>
+          <tbody class="guests-body"></tbody>
+        </table>
+        <div class="empty guests-empty" style="display:none;">No guests yet — add your first one above.</div>
+      </div>
+    </div>
+
+    <div class="event-guest-panel" id="guestlist-Reception" data-event="Reception">
+      <div class="controls">
+        <input type="search" class="guest-search" placeholder="Search guests…">
+        <select class="guest-filter-side">
+          <option value="">All sides</option>
+          <option value="Bride">Bride's side</option>
+          <option value="Groom">Groom's side</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="guests-totals" style="font-size:13px;opacity:0.65;"></span>
+        <button class="btn add-guest">+ Add guest</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Name</th><th>Side</th><th>Group</th><th>Phone</th><th>Self</th><th>Driver</th><th>RSVP</th><th>Notes</th><th></th>
+          </tr></thead>
+          <tbody class="guests-body"></tbody>
+        </table>
+        <div class="empty guests-empty" style="display:none;">No guests yet — add your first one above.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUDGET -->
+  <section class="panel" id="panel-budget">
+    <h2 class="section-title">Budget tracker</h2>
+    <p class="section-sub">Estimated vs. actual cost, by category.</p>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat"><div class="n" id="budget-est">৳0</div><div class="l">Total estimated</div></div>
+      <div class="stat"><div class="n" id="budget-actual">৳0</div><div class="l">Total actual</div></div>
+      <div class="stat"><div class="n" id="budget-paid">৳0</div><div class="l">Paid so far</div></div>
+    </div>
+    <div class="controls">
+      <div class="spacer"></div>
+      <button class="btn" id="add-budget">+ Add line item</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Category</th><th>Item</th><th>Estimated (৳)</th><th>Actual (৳)</th><th>Paid</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="budget-body"></tbody>
+      </table>
+      <div class="empty" id="budget-empty" style="display:none;">No budget items yet — add your first one above.</div>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section class="panel" id="panel-tasks">
+    <h2 class="section-title">Tasks &amp; checklist</h2>
+    <p class="section-sub">Everything that needs to get done before the big days.</p>
+    <div class="controls">
+      <select id="task-filter">
+        <option value="">All tasks</option>
+        <option value="open">Open</option>
+        <option value="done">Done</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn" id="add-task">+ Add task</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:34px;"></th><th>Task</th><th>Assigned to</th><th>Due date</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="tasks-body"></tbody>
+      </table>
+      <div class="empty" id="tasks-empty" style="display:none;">No tasks yet — add your first one above.</div>
+    </div>
+  </section>
+
+  <!-- VENDORS -->
+  <section class="panel" id="panel-vendors">
+    <h2 class="section-title">Vendors</h2>
+    <p class="section-sub">Caterers, decorators, photographers and everyone else.</p>
+    <div class="controls">
+      <div class="spacer"></div>
+      <button class="btn" id="add-vendor">+ Add vendor</button>
+    </div>
+    <div class="vendor-grid" id="vendors-grid"></div>
+    <div class="empty" id="vendors-empty" style="display:none;">No vendors yet — add your first one above.</div>
+  </section>
+
+</main>
+
+<footer>Afra &amp; Asrar's wedding planner</footer>
+<div class="toast" id="toast"></div>
+<datalist id="group-options">
+  <option value="Relatives">
+  <option value="Friends">
+  <option value="Afra's friends">
+  <option value="Asrar's friends">
+  <option value="Colleagues">
+  <option value="Neighbors">
+</datalist>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Tabs ----------
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabBtns.forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Countdown ----------
+  function renderCountdown(el, targetDate){
+    function tick(){
+      var now = new Date();
+      var diff = targetDate - now;
+      var html;
+      if(diff <= 0 && diff > -86400000){
+        html = '<div class="num" style="font-size:20px;">Today!</div>';
+      } else if(diff <= -86400000){
+        html = '<div class="num" style="font-size:18px;">Celebrated</div>';
+      } else {
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        html = '<div><span class="num">'+d+'</span><div class="lab">days</div></div>' +
+               '<div><span class="num">'+h+'</span><div class="lab">hours</div></div>';
+      }
+      el.innerHTML = html;
+    }
+    tick();
+    setInterval(tick, 60000);
+  }
+  renderCountdown(document.getElementById('cd-holud'), new Date('2026-12-16T00:00:00'));
+  renderCountdown(document.getElementById('cd-reception'), new Date('2026-12-18T00:00:00'));
+
+  // ---------- Guest list sub-tabs ----------
+  document.querySelectorAll('.subtab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.subtab-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      document.querySelectorAll('.event-guest-panel').forEach(function(p){p.classList.remove('active');});
+      document.getElementById('guestlist-' + btn.dataset.event).classList.add('active');
+    });
+  });
+
+  // ---------- Toast ----------
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){toastEl.classList.remove('show');}, 2200);
+  }
+
+  // ---------- Data layer: Google Apps Script backend (Google Sheet as the database) ----------
+  var API_URL_KEY = 'wedding_apps_script_url';
+  var DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbzGkYstcdI1KJId9F7iU3C9mr0wWnhv7ynyAro-hvtvvLtejKuoq1UfDFixbydA8eKfHA/exec';
+  var apiUrl = localStorage.getItem(API_URL_KEY) || DEFAULT_API_URL;
+  var state = { guestsHolud: {}, guestsReception: {}, budget: {}, tasks: {}, vendors: {} };
+  var guestFilters = { Holud: {search:'', side:''}, Reception: {search:'', side:''} };
+  var POLL_MS = 6000;
+  var pollTimer = null;
+  var COLLECTIONS = ['guestsHolud','guestsReception','budget','tasks','vendors'];
+
+  function fmtMoney(n){
+    n = Number(n) || 0;
+    return '৳' + n.toLocaleString('en-US');
+  }
+
+  function esc(s){
+    if(s === undefined || s === null) return '';
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function isEditingNow(){
+    var ae = document.activeElement;
+    return !!(ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT' || ae.tagName === 'TEXTAREA'));
+  }
+
+  function setConnDot(ok){
+    var dot = document.getElementById('conn-dot');
+    if(!dot) return;
+    dot.style.background = ok ? '#5C7A5C' : '#B8433F';
+    dot.title = ok ? 'Connected to your Google Sheet' : 'Not connected';
+  }
+
+  async function apiCall(action, collection, extra){
+    if(!apiUrl) return null;
+    try{
+      if(action === 'list'){
+        var res = await fetch(apiUrl + '?action=list&collection=' + encodeURIComponent(collection) + '&t=' + Date.now());
+        var json = await res.json();
+        setConnDot(!json.error);
+        return json;
+      } else {
+        var body = Object.assign({action:action, collection:collection}, extra || {});
+        var res2 = await fetch(apiUrl, {
+          method:'POST',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(body)
+        });
+        var json2 = await res2.json();
+        setConnDot(!json2.error);
+        return json2;
+      }
+    }catch(e){
+      console.error(e);
+      setConnDot(false);
+      return null;
+    }
+  }
+
+  function loadCollection(name){
+    return apiCall('list', name).then(function(json){
+      if(json && !json.error && !isEditingNow()){
+        state[name] = json.data || {};
+        renderAll();
+      }
+    });
+  }
+
+  function loadAll(){
+    return Promise.all(COLLECTIONS.map(loadCollection));
+  }
+
+  function startPolling(){
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(loadAll, POLL_MS);
+  }
+
+  function initApi(){
+    if(!apiUrl){
+      renderAllReadOnlyNotice();
+      setConnDot(false);
+      return;
+    }
+    loadAll();
+    startPolling();
+  }
+
+  function renderAllReadOnlyNotice(){
+    var msg = 'Connect your Google Sheet in Settings to start adding guests, budget items and tasks.';
+    document.querySelectorAll('.guests-empty').forEach(function(el){ el.style.display='block'; el.textContent = msg; });
+    ['budget-empty','tasks-empty'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){ el.style.display='block'; el.textContent = msg; }
+    });
+  }
+
+  // ---------- Edit PIN gate ----------
+  var PIN_KEY = 'wedding_edit_pin';
+  var editPin = localStorage.getItem(PIN_KEY) || '';
+  var pendingPinCallback = null;
+  var pinOverlay = document.getElementById('pin-overlay');
+  var pinInput = document.getElementById('pin-input');
+  var pinError = document.getElementById('pin-error');
+
+  function openPinModal(){
+    pinError.style.display = 'none';
+    pinInput.value = '';
+    pinOverlay.style.display = 'flex';
+    setTimeout(function(){ pinInput.focus(); }, 50);
+  }
+  function closePinModal(){ pinOverlay.style.display = 'none'; pendingPinCallback = null; }
+  function submitPin(){
+    var val = pinInput.value.trim();
+    if(!val) return;
+    editPin = val;
+    localStorage.setItem(PIN_KEY, val);
+    pinOverlay.style.display = 'none';
+    var cb = pendingPinCallback;
+    pendingPinCallback = null;
+    if(cb) cb();
+  }
+  document.getElementById('pin-cancel').addEventListener('click', closePinModal);
+  document.getElementById('pin-submit').addEventListener('click', submitPin);
+  pinInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') submitPin(); });
+
+  function ensurePin(action){
+    if(editPin){ action(); return; }
+    pendingPinCallback = action;
+    openPinModal();
+  }
+  function rejectPin(retry){
+    editPin = '';
+    localStorage.removeItem(PIN_KEY);
+    toast('Incorrect PIN.');
+    pendingPinCallback = retry;
+    pinError.style.display = 'block';
+    pinInput.value = '';
+    pinOverlay.style.display = 'flex';
+    setTimeout(function(){ pinInput.focus(); }, 50);
+  }
+
+  // ---------- Settings modal ----------
+  var settingsOverlay = document.getElementById('settings-overlay');
+  var settingsUrlInput = document.getElementById('settings-url');
+  function openSettings(){
+    settingsUrlInput.value = apiUrl;
+    settingsOverlay.style.display = 'flex';
+  }
+  function closeSettings(){ settingsOverlay.style.display = 'none'; }
+  document.getElementById('open-settings').addEventListener('click', openSettings);
+  document.getElementById('settings-cancel').addEventListener('click', closeSettings);
+  document.getElementById('settings-save').addEventListener('click', function(){
+    var val = settingsUrlInput.value.trim();
+    apiUrl = val;
+    localStorage.setItem(API_URL_KEY, val);
+    closeSettings();
+    if(apiUrl){ toast('Connected — loading your sheet…'); initApi(); }
+  });
+
+  function renderAll(){
+    renderGuestList('Holud');
+    renderGuestList('Reception');
+    renderBudget();
+    renderTasks();
+    renderVendors();
+    renderStats();
+  }
+
+  function renderStats(){
+    var holud = Object.values(state.guestsHolud);
+    var reception = Object.values(state.guestsReception);
+    document.getElementById('stat-guests-holud').textContent = holud.length;
+    document.getElementById('stat-guests-reception').textContent = reception.length;
+    document.getElementById('stat-drivers-holud').textContent = holud.reduce(function(s,g){ return s + (Number(g.headcountDriver)||0); }, 0);
+    document.getElementById('stat-drivers-reception').textContent = reception.reduce(function(s,g){ return s + (Number(g.headcountDriver)||0); }, 0);
+    renderGroupBreakdown(holud, reception);
+
+    var budget = Object.values(state.budget);
+    var est = budget.reduce(function(s,b){ return s + (Number(b.estimated)||0); }, 0);
+    var act = budget.reduce(function(s,b){ return s + (Number(b.actual)||0); }, 0);
+    document.getElementById('stat-budget').textContent = est > 0 ? Math.round((act/est)*100) + '%' : '—';
+
+    var tasks = Object.values(state.tasks);
+    var done = tasks.filter(function(t){ return t.done; }).length;
+    document.getElementById('stat-tasks').textContent = tasks.length ? (done + ' / ' + tasks.length) : '—';
+  }
+
+  function renderGroupBreakdown(holud, reception){
+    var groups = {};
+    function tally(list, key){
+      list.forEach(function(g){
+        var name = (g.group || '').trim() || 'Ungrouped';
+        if(!groups[name]) groups[name] = {Holud:0, Reception:0};
+        groups[name][key]++;
+      });
+    }
+    tally(holud, 'Holud');
+    tally(reception, 'Reception');
+    var names = Object.keys(groups).sort(function(a,b){
+      if(a === 'Ungrouped') return 1;
+      if(b === 'Ungrouped') return -1;
+      return a.localeCompare(b);
+    });
+    var body = document.getElementById('group-breakdown-body');
+    document.getElementById('group-breakdown-empty').style.display = names.length ? 'none' : 'block';
+    var totalHolud = 0, totalReception = 0;
+    var rows = names.map(function(name){
+      var c = groups[name];
+      totalHolud += c.Holud; totalReception += c.Reception;
+      return '<tr><td>'+esc(name)+'</td><td>'+c.Holud+'</td><td>'+c.Reception+'</td><td>'+(c.Holud+c.Reception)+'</td></tr>';
+    });
+    if(names.length){
+      rows.push('<tr style="font-weight:700;"><td>Total</td><td>'+totalHolud+'</td><td>'+totalReception+'</td><td>'+(totalHolud+totalReception)+'</td></tr>');
+    }
+    body.innerHTML = rows.join('');
+  }
+
+  // ---------- Guests ----------
+  function addDoc(collection, data){
+    if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); openSettings(); return; }
+    ensurePin(function(){
+      apiCall('add', collection, {data:data, pin:editPin}).then(function(res){
+        if(res && res.id){ loadCollection(collection); }
+        else if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ addDoc(collection, data); }); }
+        else { toast('Could not save — try again.'); }
+      });
+    });
+  }
+  function updateDoc(collection, id, data){
+    if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); return; }
+    ensurePin(function(){
+      if(state[collection] && state[collection][id]) Object.assign(state[collection][id], data);
+      apiCall('update', collection, {id:id, data:data, pin:editPin}).then(function(res){
+        if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ updateDoc(collection, id, data); }); }
+        else if(!res || res.error){ toast('Could not save — try again.'); }
+      });
+    });
+  }
+  function deleteDoc(collection, id){
+    if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); return; }
+    ensurePin(function(){
+      if(state[collection]) delete state[collection][id];
+      renderAll();
+      apiCall('delete', collection, {id:id, pin:editPin}).then(function(res){
+        if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ deleteDoc(collection, id); }); }
+        else if(!res || res.error){ toast('Could not delete — try again.'); }
+      });
+    });
+  }
+
+  ['Holud','Reception'].forEach(function(eventKey){
+    var panel = document.getElementById('guestlist-' + eventKey);
+    panel.querySelector('.guest-search').addEventListener('input', function(e){
+      guestFilters[eventKey].search = e.target.value.toLowerCase(); renderGuestList(eventKey);
+    });
+    panel.querySelector('.guest-filter-side').addEventListener('change', function(e){
+      guestFilters[eventKey].side = e.target.value; renderGuestList(eventKey);
+    });
+    panel.querySelector('.add-guest').addEventListener('click', function(){
+      addDoc('guests' + eventKey, {name:'New guest', side:'Bride', group:'', phone:'', headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:''});
+    });
+  });
+
+  function renderGuestList(eventKey){
+    var collection = 'guests' + eventKey;
+    var panel = document.getElementById('guestlist-' + eventKey);
+    var body = panel.querySelector('.guests-body');
+    var filters = guestFilters[eventKey];
+    var entries = Object.entries(state[collection]).filter(function(e){
+      var g = e[1];
+      var matchesSearch = !filters.search || (g.name||'').toLowerCase().indexOf(filters.search) !== -1;
+      var matchesSide = !filters.side || g.side === filters.side;
+      return matchesSearch && matchesSide;
+    });
+    entries.sort(function(a,b){ return (a[1].name||'').localeCompare(b[1].name||''); });
+    panel.querySelector('.guests-empty').style.display = entries.length ? 'none' : 'block';
+    body.innerHTML = entries.map(function(e){
+      var id = e[0], g = e[1];
+      return '<tr data-id="'+id+'">' +
+        '<td><input type="text" class="f-name" value="'+esc(g.name)+'"></td>' +
+        '<td><select class="f-side"><option value="Bride"'+(g.side==='Bride'?' selected':'')+'>Bride\'s side</option><option value="Groom"'+(g.side==='Groom'?' selected':'')+'>Groom\'s side</option></select></td>' +
+        '<td><input type="text" class="f-group" list="group-options" value="'+esc(g.group)+'" placeholder="e.g. Relatives"></td>' +
+        '<td><input type="text" class="f-phone" value="'+esc(g.phone)+'"></td>' +
+        '<td><input type="number" min="0" class="f-headcountSelf" style="width:52px;" value="'+(g.headcountSelf!==undefined?Number(g.headcountSelf):1)+'"></td>' +
+        '<td><input type="number" min="0" class="f-headcountDriver" style="width:52px;" value="'+(Number(g.headcountDriver)||0)+'"></td>' +
+        '<td><select class="f-rsvp">'+
+          '<option value="pending"'+(g.rsvp==='pending'?' selected':'')+'>Pending</option>'+
+          '<option value="confirmed"'+(g.rsvp==='confirmed'?' selected':'')+'>Confirmed</option>'+
+          '<option value="declined"'+(g.rsvp==='declined'?' selected':'')+'>Declined</option>'+
+        '</select></td>' +
+        '<td><input type="text" class="f-notes" value="'+esc(g.notes)+'" placeholder="—"></td>' +
+        '<td class="row-actions"><button class="btn ghost del">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    wireRow(body, collection, {
+      '.f-name':'name', '.f-group':'group', '.f-phone':'phone', '.f-notes':'notes'
+    }, {
+      '.f-side':'side', '.f-rsvp':'rsvp'
+    }, {});
+    body.querySelectorAll('tr').forEach(function(tr){
+      var id = tr.dataset.id;
+      ['headcountSelf','headcountDriver'].forEach(function(key){
+        var input = tr.querySelector('.f-'+key);
+        if(!input) return;
+        input.addEventListener('change', function(){
+          updateDoc(collection, id, (function(){ var o={}; o[key]=Math.max(0, Number(input.value)||0); return o; })());
+        });
+      });
+    });
+
+    var totalSelf = entries.reduce(function(s,e){ return s + (e[1].headcountSelf!==undefined?Number(e[1].headcountSelf):1); }, 0);
+    var totalDriver = entries.reduce(function(s,e){ return s + (Number(e[1].headcountDriver)||0); }, 0);
+    var totalsEl = panel.querySelector('.guests-totals');
+    if(totalsEl){
+      totalsEl.textContent = entries.length ? (totalSelf + ' guests, ' + totalDriver + ' drivers — ' + (totalSelf+totalDriver) + ' total headcount') : '';
+    }
+  }
+
+  // generic row wiring: textFields map selector->key, selectFields selector->key, checkFields selector->key
+  function wireRow(body, collection, textFields, selectFields, checkFields){
+    body.querySelectorAll('tr').forEach(function(tr){
+      var id = tr.dataset.id;
+      Object.keys(textFields||{}).forEach(function(sel){
+        var input = tr.querySelector(sel);
+        if(!input) return;
+        input.addEventListener('change', function(){
+          var d = {}; d[textFields[sel]] = input.value;
+          updateDoc(collection, id, d);
+        });
+      });
+      Object.keys(selectFields||{}).forEach(function(sel){
+        var input = tr.querySelector(sel);
+        if(!input) return;
+        input.addEventListener('change', function(){
+          var d = {}; d[selectFields[sel]] = input.value;
+          updateDoc(collection, id, d);
+        });
+      });
+      Object.keys(checkFields||{}).forEach(function(sel){
+        var input = tr.querySelector(sel);
+        if(!input) return;
+        input.addEventListener('change', function(){
+          var d = {}; d[checkFields[sel]] = input.checked;
+          updateDoc(collection, id, d);
+        });
+      });
+      var del = tr.querySelector('.del');
+      if(del){
+        del.addEventListener('click', function(){
+          if(confirm('Remove this entry?')) deleteDoc(collection, id);
+        });
+      }
+    });
+  }
+
+  // ---------- Budget ----------
+  document.getElementById('add-budget').addEventListener('click', function(){
+    addDoc('budget', {category:'General', item:'New item', estimated:0, actual:0, paid:false, notes:''});
+  });
+
+  function renderBudget(){
+    var body = document.getElementById('budget-body');
+    var entries = Object.entries(state.budget);
+    entries.sort(function(a,b){ return (a[1].category||'').localeCompare(b[1].category||''); });
+    document.getElementById('budget-empty').style.display = entries.length ? 'none' : 'block';
+    body.innerHTML = entries.map(function(e){
+      var id = e[0], b = e[1];
+      return '<tr data-id="'+id+'">' +
+        '<td><input type="text" class="f-category" value="'+esc(b.category)+'"></td>' +
+        '<td><input type="text" class="f-item" value="'+esc(b.item)+'"></td>' +
+        '<td><input type="number" class="f-estimated" value="'+(Number(b.estimated)||0)+'"></td>' +
+        '<td><input type="number" class="f-actual" value="'+(Number(b.actual)||0)+'"></td>' +
+        '<td style="text-align:center;"><input type="checkbox" class="f-paid" '+(b.paid?'checked':'')+'></td>' +
+        '<td><input type="text" class="f-notes" value="'+esc(b.notes)+'" placeholder="—"></td>' +
+        '<td class="row-actions"><button class="btn ghost del">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    wireRow(body, 'budget', {
+      '.f-category':'category', '.f-item':'item', '.f-notes':'notes'
+    }, {}, { '.f-paid':'paid' });
+    // numeric fields need number coercion
+    body.querySelectorAll('tr').forEach(function(tr){
+      var id = tr.dataset.id;
+      ['estimated','actual'].forEach(function(key){
+        var input = tr.querySelector('.f-'+key);
+        input.addEventListener('change', function(){
+          updateDoc('budget', id, (function(){ var o={}; o[key]=Number(input.value)||0; return o; })());
+        });
+      });
+    });
+
+    var est = entries.reduce(function(s,e){ return s + (Number(e[1].estimated)||0); }, 0);
+    var act = entries.reduce(function(s,e){ return s + (Number(e[1].actual)||0); }, 0);
+    var paid = entries.filter(function(e){ return e[1].paid; }).reduce(function(s,e){ return s + (Number(e[1].actual)||0); }, 0);
+    document.getElementById('budget-est').textContent = fmtMoney(est);
+    document.getElementById('budget-actual').textContent = fmtMoney(act);
+    document.getElementById('budget-paid').textContent = fmtMoney(paid);
+  }
+
+  // ---------- Tasks ----------
+  var taskFilter = '';
+  document.getElementById('task-filter').addEventListener('change', function(e){
+    taskFilter = e.target.value; renderTasks();
+  });
+  document.getElementById('add-task').addEventListener('click', function(){
+    addDoc('tasks', {title:'New task', assignee:'', dueDate:'', done:false, notes:''});
+  });
+
+  function renderTasks(){
+    var body = document.getElementById('tasks-body');
+    var entries = Object.entries(state.tasks).filter(function(e){
+      if(taskFilter === 'open') return !e[1].done;
+      if(taskFilter === 'done') return !!e[1].done;
+      return true;
+    });
+    entries.sort(function(a,b){
+      if(!!a[1].done !== !!b[1].done) return a[1].done ? 1 : -1;
+      return (a[1].dueDate||'9999').localeCompare(b[1].dueDate||'9999');
+    });
+    document.getElementById('tasks-empty').style.display = entries.length ? 'none' : 'block';
+    body.innerHTML = entries.map(function(e){
+      var id = e[0], t = e[1];
+      var doneStyle = t.done ? 'text-decoration:line-through;opacity:0.5;' : '';
+      return '<tr data-id="'+id+'">' +
+        '<td style="text-align:center;"><input type="checkbox" class="f-done" '+(t.done?'checked':'')+'></td>' +
+        '<td><input type="text" class="f-title" style="'+doneStyle+'" value="'+esc(t.title)+'"></td>' +
+        '<td><input type="text" class="f-assignee" value="'+esc(t.assignee)+'" placeholder="—"></td>' +
+        '<td><input type="date" class="f-dueDate" value="'+esc(t.dueDate)+'"></td>' +
+        '<td><input type="text" class="f-notes" value="'+esc(t.notes)+'" placeholder="—"></td>' +
+        '<td class="row-actions"><button class="btn ghost del">✕</button></td>' +
+      '</tr>';
+    }).join('');
+    wireRow(body, 'tasks', {
+      '.f-title':'title', '.f-assignee':'assignee', '.f-dueDate':'dueDate', '.f-notes':'notes'
+    }, {}, { '.f-done':'done' });
+  }
+
+  // ---------- Vendors ----------
+  document.getElementById('add-vendor').addEventListener('click', function(){
+    addDoc('vendors', {name:'New vendor', category:'Catering', contact:'', notes:''});
+  });
+
+  function renderVendors(){
+    var grid = document.getElementById('vendors-grid');
+    var entries = Object.entries(state.vendors);
+    entries.sort(function(a,b){ return (a[1].name||'').localeCompare(b[1].name||''); });
+    document.getElementById('vendors-empty').style.display = entries.length ? 'none' : 'block';
+    grid.innerHTML = entries.map(function(e){
+      var id = e[0], v = e[1];
+      return '<div class="vcard" data-id="'+id+'">' +
+        '<input type="text" class="f-name" value="'+esc(v.name)+'" style="font-family:Cormorant Garamond,serif;font-size:19px;font-weight:600;border:none;background:none;width:100%;padding:0 0 2px;color:inherit;">' +
+        '<input type="text" class="f-category" value="'+esc(v.category)+'" style="border:none;background:none;color:var(--gold);font-size:12px;font-weight:600;width:100%;padding:0 0 8px;">' +
+        '<input type="text" class="f-contact" value="'+esc(v.contact)+'" placeholder="Phone / email" style="border:none;background:none;font-size:13px;opacity:0.8;width:100%;padding:2px 0;">' +
+        '<textarea class="f-notes" placeholder="Notes" rows="2" style="border:none;background:none;font-size:13px;opacity:0.65;width:100%;padding:4px 0;font-family:Karla,sans-serif;resize:vertical;">'+esc(v.notes)+'</textarea>' +
+        '<div class="row-actions"><button class="btn ghost del">Remove</button></div>' +
+      '</div>';
+    }).join('');
+    grid.querySelectorAll('.vcard').forEach(function(card){
+      var id = card.dataset.id;
+      ['name','category','contact','notes'].forEach(function(key){
+        var input = card.querySelector('.f-'+key);
+        input.addEventListener('change', function(){
+          var d = {}; d[key] = input.value;
+          updateDoc('vendors', id, d);
+        });
+      });
+      card.querySelector('.del').addEventListener('click', function(){
+        if(confirm('Remove this vendor?')) deleteDoc('vendors', id);
+      });
+    });
+  }
+
+  initApi();
+  renderAll();
+})();
+</script>
+</body>
+</html>
