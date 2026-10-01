@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --maroon:#5B1A2E;
@@ -239,6 +240,7 @@
   .vcard .row-actions{margin-top:10px;}
 
   .row-actions{display:flex;gap:4px;justify-content:flex-end;}
+  .row-actions a.btn{text-decoration:none;display:inline-block;}
 
   footer{max-width:1000px;margin:0 auto;padding:20px 20px 40px;font-size:12px;opacity:0.45;text-align:center;}
 
@@ -295,6 +297,9 @@
     <h2 style="margin:0 0 6px;font-size:22px;">Connect your Google Sheet</h2>
     <p style="font-size:13px;opacity:0.7;margin:0 0 16px;line-height:1.5;">Paste the Apps Script web app URL from your deployed Google Sheet backend. See the setup guide that came with this file for how to get this link.</p>
     <input type="text" id="settings-url" placeholder="https://script.google.com/macros/s/…/exec" style="width:100%;margin-bottom:14px;">
+    <label style="font-size:12px;opacity:0.65;display:block;margin:0 0 4px;">Google Contacts import — optional, only needed by whoever imports contacts</label>
+    <input type="text" id="settings-client-id" placeholder="xxxxxxxxxx.apps.googleusercontent.com" style="width:100%;margin-bottom:6px;">
+    <p style="font-size:12px;opacity:0.6;margin:0 0 14px;line-height:1.5;">See the setup guide for how to create this. Not required just to view or add guests manually.</p>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button class="btn secondary" id="settings-cancel">Cancel</button>
       <button class="btn" id="settings-save">Save & connect</button>
@@ -311,6 +316,23 @@
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button class="btn secondary" id="pin-cancel">Cancel</button>
       <button class="btn" id="pin-submit">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div id="contacts-overlay" style="display:none;position:fixed;inset:0;background:rgba(43,20,32,0.5);z-index:65;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--white);border-radius:6px;max-width:520px;width:100%;max-height:80vh;display:flex;flex-direction:column;padding:22px;">
+    <h2 style="margin:0 0 4px;font-size:22px;">Import guests</h2>
+    <p id="contacts-sub" style="font-size:13px;opacity:0.7;margin:0 0 12px;">Select who to add.</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="search" id="contacts-search" placeholder="Search…" style="flex:1;">
+      <button class="btn secondary small" id="contacts-select-all">All</button>
+      <button class="btn secondary small" id="contacts-select-none">None</button>
+    </div>
+    <div id="contacts-list" style="overflow-y:auto;flex:1;border:1px solid var(--line);border-radius:4px;min-height:120px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
+      <button class="btn secondary" id="contacts-cancel">Cancel</button>
+      <button class="btn" id="contacts-import">Import selected</button>
     </div>
   </div>
 </div>
@@ -359,6 +381,9 @@
         </select>
         <div class="spacer"></div>
         <span class="guests-totals" style="font-size:13px;opacity:0.65;"></span>
+        <button class="btn secondary import-csv">Import from CSV</button>
+        <input type="file" class="csv-file-input" accept=".csv,text/csv" style="display:none;">
+        <button class="btn secondary import-contacts">Import from Google Contacts</button>
         <button class="btn add-guest">+ Add guest</button>
       </div>
       <div class="table-wrap">
@@ -382,6 +407,9 @@
         </select>
         <div class="spacer"></div>
         <span class="guests-totals" style="font-size:13px;opacity:0.65;"></span>
+        <button class="btn secondary import-csv">Import from CSV</button>
+        <input type="file" class="csv-file-input" accept=".csv,text/csv" style="display:none;">
+        <button class="btn secondary import-contacts">Import from Google Contacts</button>
         <button class="btn add-guest">+ Add guest</button>
       </div>
       <div class="table-wrap">
@@ -671,10 +699,14 @@
   }
 
   // ---------- Settings modal ----------
+  var CLIENT_ID_KEY = 'wedding_google_client_id';
+  var googleClientId = localStorage.getItem(CLIENT_ID_KEY) || '';
   var settingsOverlay = document.getElementById('settings-overlay');
   var settingsUrlInput = document.getElementById('settings-url');
+  var settingsClientIdInput = document.getElementById('settings-client-id');
   function openSettings(){
     settingsUrlInput.value = apiUrl;
+    settingsClientIdInput.value = googleClientId;
     settingsOverlay.style.display = 'flex';
   }
   function closeSettings(){ settingsOverlay.style.display = 'none'; }
@@ -684,8 +716,178 @@
     var val = settingsUrlInput.value.trim();
     apiUrl = val;
     localStorage.setItem(API_URL_KEY, val);
+    googleClientId = settingsClientIdInput.value.trim();
+    localStorage.setItem(CLIENT_ID_KEY, googleClientId);
     closeSettings();
     if(apiUrl){ toast('Connected — loading your sheet…'); initApi(); }
+  });
+
+  // ---------- Google Contacts import ----------
+  function bulkAddDocs(collection, items){
+    if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); return; }
+    ensurePin(function(){
+      apiCall('bulkAdd', collection, {items:items, pin:editPin}).then(function(res){
+        if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ bulkAddDocs(collection, items); }); }
+        else if(res && typeof res.count === 'number'){ toast(res.count + ' guest' + (res.count === 1 ? '' : 's') + ' imported.'); loadCollection(collection); }
+        else { toast('Import failed — try again.'); }
+      });
+    });
+  }
+
+  function requestGoogleContacts(onToken){
+    if(!googleClientId){ toast('Add your Google Client ID in Settings first.'); openSettings(); return; }
+    if(!window.google || !google.accounts || !google.accounts.oauth2){
+      toast('Google sign-in is still loading — try again in a second.');
+      return;
+    }
+    var client = google.accounts.oauth2.initTokenClient({
+      client_id: googleClientId,
+      scope: 'https://www.googleapis.com/auth/contacts.readonly',
+      callback: function(resp){
+        if(resp && resp.access_token){ onToken(resp.access_token); }
+        else { toast('Could not get permission to read contacts.'); }
+      }
+    });
+    client.requestAccessToken();
+  }
+
+  function fetchGoogleContacts(token){
+    var all = [];
+    function page(pageToken){
+      var url = 'https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers&pageSize=200' + (pageToken ? '&pageToken=' + encodeURIComponent(pageToken) : '');
+      return fetch(url, { headers: { Authorization: 'Bearer ' + token } })
+        .then(function(res){ return res.json(); })
+        .then(function(json){
+          (json.connections || []).forEach(function(c){
+            var name = c.names && c.names[0] ? c.names[0].displayName : '';
+            var phone = c.phoneNumbers && c.phoneNumbers[0] ? c.phoneNumbers[0].value : '';
+            if(name) all.push({ name: name, phone: phone });
+          });
+          if(json.nextPageToken) return page(json.nextPageToken);
+          return all;
+        });
+    }
+    return page('');
+  }
+
+  // ---------- CSV import (e.g. exported from Google Contacts) ----------
+  function parseCSV(text){
+    var rows = [], row = [], field = '', inQuotes = false;
+    var i = 0, len = text.length;
+    while(i < len){
+      var ch = text[i];
+      if(inQuotes){
+        if(ch === '"'){
+          if(text[i+1] === '"'){ field += '"'; i += 2; continue; }
+          inQuotes = false; i++; continue;
+        }
+        field += ch; i++; continue;
+      } else {
+        if(ch === '"'){ inQuotes = true; i++; continue; }
+        if(ch === ','){ row.push(field); field = ''; i++; continue; }
+        if(ch === '\r'){ i++; continue; }
+        if(ch === '\n'){ row.push(field); field = ''; rows.push(row); row = []; i++; continue; }
+        field += ch; i++; continue;
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    if(!rows.length) return [];
+    var headers = rows[0].map(function(h){ return h.trim(); });
+    var out = [];
+    for(var r = 1; r < rows.length; r++){
+      var cols = rows[r];
+      if(cols.length === 1 && cols[0] === '') continue;
+      var obj = {};
+      headers.forEach(function(h, idx){ obj[h] = (cols[idx] !== undefined ? cols[idx] : '').trim(); });
+      out.push(obj);
+    }
+    return out;
+  }
+
+  function pickCsvName(obj){
+    if(obj['Name'] && obj['Name'].trim()) return obj['Name'].trim();
+    var given = obj['Given Name'] || obj['First Name'] || '';
+    var family = obj['Family Name'] || obj['Last Name'] || '';
+    var combined = (given + ' ' + family).trim();
+    if(combined) return combined;
+    var keys = Object.keys(obj);
+    for(var i = 0; i < keys.length; i++){
+      if(/name/i.test(keys[i]) && obj[keys[i]]) return obj[keys[i]];
+    }
+    return '';
+  }
+  function pickCsvPhone(obj){
+    var keys = Object.keys(obj);
+    var phoneValueKeys = keys.filter(function(k){ return /phone\s*\d*\s*-\s*value/i.test(k); });
+    for(var i = 0; i < phoneValueKeys.length; i++){
+      if(obj[phoneValueKeys[i]]) return obj[phoneValueKeys[i]].split(':::')[0].trim();
+    }
+    var otherKeys = ['Mobile Phone','Home Phone','Business Phone','Phone Number','Phone','Telephone'];
+    for(i = 0; i < otherKeys.length; i++){
+      if(obj[otherKeys[i]]) return obj[otherKeys[i]];
+    }
+    var anyPhoneKey = keys.find(function(k){ return /phone/i.test(k) && obj[k]; });
+    return anyPhoneKey ? obj[anyPhoneKey] : '';
+  }
+  function extractContactsFromCSV(rows){
+    var out = [];
+    rows.forEach(function(obj){
+      var name = pickCsvName(obj);
+      if(!name) return;
+      out.push({ name: name, phone: pickCsvPhone(obj) });
+    });
+    return out;
+  }
+
+  var contactsOverlay = document.getElementById('contacts-overlay');
+  var contactsListEl = document.getElementById('contacts-list');
+  var contactsSearchEl = document.getElementById('contacts-search');
+  var currentContactsEventKey = null;
+  var currentContacts = [];
+
+  function openContactPicker(eventKey, contacts){
+    currentContactsEventKey = eventKey;
+    currentContacts = contacts;
+    var label = eventKey === 'Holud' ? 'Gaye Holud' : 'Reception';
+    document.getElementById('contacts-sub').textContent = contacts.length
+      ? ('Select who to add to the ' + label + ' list (' + contacts.length + ' found).')
+      : 'No contacts with names were found in your Google account.';
+    contactsSearchEl.value = '';
+    renderContactsList('');
+    contactsOverlay.style.display = 'flex';
+  }
+  function renderContactsList(filter){
+    var f = filter.toLowerCase();
+    var rows = currentContacts.map(function(c, i){
+      if(f && c.name.toLowerCase().indexOf(f) === -1) return '';
+      return '<label style="display:flex;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px;">' +
+        '<input type="checkbox" class="contact-check" data-idx="'+i+'" checked>' +
+        '<span style="flex:1;">'+esc(c.name)+'</span>' +
+        '<span style="opacity:0.55;font-size:12px;">'+esc(c.phone)+'</span>' +
+      '</label>';
+    }).join('');
+    contactsListEl.innerHTML = rows || '<div class="empty">No matches.</div>';
+  }
+  contactsSearchEl.addEventListener('input', function(){ renderContactsList(contactsSearchEl.value); });
+  document.getElementById('contacts-select-all').addEventListener('click', function(){
+    contactsListEl.querySelectorAll('.contact-check').forEach(function(cb){ cb.checked = true; });
+  });
+  document.getElementById('contacts-select-none').addEventListener('click', function(){
+    contactsListEl.querySelectorAll('.contact-check').forEach(function(cb){ cb.checked = false; });
+  });
+  document.getElementById('contacts-cancel').addEventListener('click', function(){ contactsOverlay.style.display = 'none'; });
+  document.getElementById('contacts-import').addEventListener('click', function(){
+    var selected = [];
+    contactsListEl.querySelectorAll('.contact-check:checked').forEach(function(cb){
+      selected.push(currentContacts[Number(cb.dataset.idx)]);
+    });
+    if(!selected.length){ toast('Select at least one contact.'); return; }
+    var collection = 'guests' + currentContactsEventKey;
+    var items = selected.map(function(c){
+      return { name:c.name, side:'Bride', group:'', phone:c.phone, headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:'' };
+    });
+    contactsOverlay.style.display = 'none';
+    bulkAddDocs(collection, items);
   });
 
   function renderAll(){
@@ -790,6 +992,35 @@
     panel.querySelector('.add-guest').addEventListener('click', function(){
       addDoc('guests' + eventKey, {name:'New guest', side:'Bride', group:'', phone:'', headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:''});
     });
+    panel.querySelector('.import-contacts').addEventListener('click', function(){
+      requestGoogleContacts(function(token){
+        toast('Loading your Google Contacts…');
+        fetchGoogleContacts(token).then(function(contacts){
+          openContactPicker(eventKey, contacts);
+        }).catch(function(e){ console.error(e); toast('Could not load contacts.'); });
+      });
+    });
+    panel.querySelector('.import-csv').addEventListener('click', function(){
+      panel.querySelector('.csv-file-input').click();
+    });
+    panel.querySelector('.csv-file-input').addEventListener('change', function(e){
+      var file = e.target.files[0];
+      e.target.value = '';
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        try{
+          var rows = parseCSV(evt.target.result);
+          var contacts = extractContactsFromCSV(rows);
+          if(!contacts.length){ toast('No usable names found in that CSV.'); return; }
+          openContactPicker(eventKey, contacts);
+        }catch(err){
+          console.error(err);
+          toast('Could not read that CSV file.');
+        }
+      };
+      reader.readAsText(file);
+    });
   });
 
   function renderGuestList(eventKey){
@@ -820,7 +1051,10 @@
           '<option value="declined"'+(g.rsvp==='declined'?' selected':'')+'>Declined</option>'+
         '</select></td>' +
         '<td><input type="text" class="f-notes" value="'+esc(g.notes)+'" placeholder="—"></td>' +
-        '<td class="row-actions"><button class="btn ghost del">✕</button></td>' +
+        '<td class="row-actions">' +
+          (g.phone ? '<a class="btn ghost" href="tel:'+esc(String(g.phone).replace(/[^0-9+]/g,''))+'" title="Call '+esc(g.name)+'">📞</a>' : '') +
+          '<button class="btn ghost del">✕</button>' +
+        '</td>' +
       '</tr>';
     }).join('');
     wireRow(body, collection, {
