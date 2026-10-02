@@ -1,0 +1,31 @@
+{
+  "name": "Afra & Asrar's Wedding",
+  "short_name": "Afra & Asrar",
+  "description": "Guest list, budget, tasks and vendors for Afra & Asrar's wedding.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#221319",
+  "theme_color": "#5B1A2E",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
