@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Afra &amp; Asrar</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5B1A2E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Afra &amp; Asrar">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -289,6 +297,7 @@
     <button class="tab-btn" data-tab="vendors">Vendors</button>
     <div class="spacer"></div>
     <span id="conn-dot" title="Not connected" style="width:8px;height:8px;border-radius:50%;background:#B8433F;display:inline-block;margin-right:6px;flex:0 0 auto;"></span>
+    <button class="btn secondary small" id="install-app-btn" style="display:none;font-size:13px;padding:7px 12px;margin-right:8px;">Install app</button>
     <button class="btn ghost" id="open-settings" style="opacity:1;font-size:13px;">Settings</button>
   </div>
 </div>
@@ -301,6 +310,14 @@
     <label style="font-size:12px;opacity:0.65;display:block;margin:0 0 4px;">Google Contacts import — optional, only needed by whoever imports contacts</label>
     <input type="text" id="settings-client-id" placeholder="xxxxxxxxxx.apps.googleusercontent.com" style="width:100%;margin-bottom:6px;">
     <p style="font-size:12px;opacity:0.6;margin:0 0 14px;line-height:1.5;">See the setup guide for how to create this. Not required just to view or add guests manually.</p>
+    <hr style="border:none;border-top:1px solid var(--line);margin:0 0 16px;">
+    <label style="font-size:12px;opacity:0.65;display:block;margin:0 0 4px;">Phone number autocomplete</label>
+    <p style="font-size:12px;opacity:0.6;margin:0 0 10px;line-height:1.5;">Upload a CSV once (e.g. exported from Google Contacts) and the Name field in the guest list will suggest names and fill in the phone number automatically — no need to import them as guests first.</p>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+      <button class="btn secondary small" id="upload-directory" type="button">Upload CSV</button>
+      <input type="file" id="directory-file-input" accept=".csv,text/csv" style="display:none;">
+      <span id="directory-status" style="font-size:12px;opacity:0.6;"></span>
+    </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button class="btn secondary" id="settings-cancel">Cancel</button>
       <button class="btn" id="settings-save">Save & connect</button>
@@ -499,6 +516,7 @@
   <option value="Colleagues">
   <option value="Neighbors">
 </datalist>
+<datalist id="contacts-directory-options"></datalist>
 
 <script>
 (function(){
@@ -868,6 +886,67 @@
     return out;
   }
 
+  // ---------- Phone-number autocomplete directory ----------
+  // A separate, local-only phonebook (not synced to the Sheet) used purely to
+  // suggest names and auto-fill phone numbers as you type in the guest list.
+  var CONTACTS_DIR_KEY = 'wedding_contacts_directory';
+  var contactsDirectory = [];
+  try { contactsDirectory = JSON.parse(localStorage.getItem(CONTACTS_DIR_KEY) || '[]'); } catch(e) { contactsDirectory = []; }
+
+  function saveContactsDirectory(list){
+    contactsDirectory = list;
+    try { localStorage.setItem(CONTACTS_DIR_KEY, JSON.stringify(list)); } catch(e){}
+    renderDirectoryOptions();
+    updateDirectoryStatus();
+  }
+
+  function renderDirectoryOptions(){
+    var dl = document.getElementById('contacts-directory-options');
+    if(!dl) return;
+    dl.innerHTML = contactsDirectory.map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join('');
+  }
+
+  function updateDirectoryStatus(){
+    var el = document.getElementById('directory-status');
+    if(!el) return;
+    el.textContent = contactsDirectory.length ? (contactsDirectory.length + ' contacts loaded') : 'No contacts uploaded yet';
+  }
+
+  function findInDirectory(name){
+    var n = (name || '').trim().toLowerCase();
+    if(!n) return null;
+    for(var i = 0; i < contactsDirectory.length; i++){
+      if(contactsDirectory[i].name.trim().toLowerCase() === n) return contactsDirectory[i];
+    }
+    return null;
+  }
+
+  var directoryFileInput = document.getElementById('directory-file-input');
+  document.getElementById('upload-directory').addEventListener('click', function(){
+    directoryFileInput.click();
+  });
+  directoryFileInput.addEventListener('change', function(e){
+    var file = e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var rows = parseCSV(evt.target.result);
+        var contacts = extractContactsFromCSV(rows).filter(function(c){ return c.phone; });
+        if(!contacts.length){ toast('No names with phone numbers found in that CSV.'); return; }
+        saveContactsDirectory(contacts);
+        toast(contacts.length + ' contacts loaded for autocomplete.');
+      }catch(err){
+        console.error(err);
+        toast('Could not read that CSV file.');
+      }
+    };
+    reader.readAsText(file);
+  });
+  renderDirectoryOptions();
+  updateDirectoryStatus();
+
   var contactsOverlay = document.getElementById('contacts-overlay');
   var contactsListEl = document.getElementById('contacts-list');
   var contactsSearchEl = document.getElementById('contacts-search');
@@ -978,12 +1057,22 @@
   }
 
   // ---------- Guests ----------
-  function addDoc(collection, data){
+  // focusSelector (optional): a CSS selector (e.g. '.f-name') for the field to
+  // auto-focus-and-select on the newly created row, so typing immediately
+  // replaces the placeholder text instead of requiring a manual select-all.
+  function addDoc(collection, data, focusSelector){
     if(!apiUrl){ toast('Connect your Google Sheet in Settings first.'); openSettings(); return; }
     ensurePin(function(){
       apiCall('add', collection, {data:data, pin:editPin}).then(function(res){
-        if(res && res.id){ loadCollection(collection); }
-        else if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ addDoc(collection, data); }); }
+        if(res && res.id){
+          loadCollection(collection).then(function(){
+            if(!focusSelector) return;
+            var row = document.querySelector('[data-id="'+res.id+'"]');
+            var field = row && row.querySelector(focusSelector);
+            if(field){ field.focus(); field.select(); }
+          });
+        }
+        else if(res && res.error === 'Invalid PIN'){ rejectPin(function(){ addDoc(collection, data, focusSelector); }); }
         else { toast('Could not save — try again.'); }
       });
     });
@@ -1034,7 +1123,7 @@
       bulkDeleteDocs('guests' + eventKey, ids, eventKey);
     });
     panel.querySelector('.add-guest').addEventListener('click', function(){
-      addDoc('guests' + eventKey, {name:'New guest', side:'Bride', group:'', phone:'', headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:''});
+      addDoc('guests' + eventKey, {name:'New guest', side:'Bride', group:'', phone:'', headcountSelf:1, headcountDriver:0, rsvp:'pending', notes:''}, '.f-name');
     });
     panel.querySelector('.import-contacts').addEventListener('click', function(){
       requestGoogleContacts(function(token){
@@ -1087,7 +1176,7 @@
       var id = e[0], g = e[1];
       return '<tr data-id="'+id+'">' +
         '<td><input type="checkbox" class="row-select" data-id="'+id+'" '+(selectedGuests[eventKey][id] ? 'checked' : '')+'></td>' +
-        '<td><input type="text" class="f-name" value="'+esc(g.name)+'"></td>' +
+        '<td><input type="text" class="f-name" list="contacts-directory-options" value="'+esc(g.name)+'"></td>' +
         '<td><select class="f-side"><option value="Bride"'+(g.side==='Bride'?' selected':'')+'>Bride\'s side</option><option value="Groom"'+(g.side==='Groom'?' selected':'')+'>Groom\'s side</option></select></td>' +
         '<td><input type="text" class="f-group" list="group-options" value="'+esc(g.group)+'" placeholder="e.g. Relatives"></td>' +
         '<td><input type="text" class="f-phone" value="'+esc(g.phone)+'"></td>' +
@@ -1119,6 +1208,18 @@
           updateDoc(collection, id, (function(){ var o={}; o[key]=Math.max(0, Number(input.value)||0); return o; })());
         });
       });
+      var nameInput = tr.querySelector('.f-name');
+      if(nameInput){
+        nameInput.addEventListener('input', function(){
+          var match = findInDirectory(nameInput.value);
+          if(!match || !match.phone) return;
+          var phoneInput = tr.querySelector('.f-phone');
+          if(phoneInput && !phoneInput.value){
+            phoneInput.value = match.phone;
+            phoneInput.dispatchEvent(new Event('change'));
+          }
+        });
+      }
       var selectCb = tr.querySelector('.row-select');
       if(selectCb){
         selectCb.addEventListener('change', function(){
@@ -1177,7 +1278,7 @@
 
   // ---------- Budget ----------
   document.getElementById('add-budget').addEventListener('click', function(){
-    addDoc('budget', {category:'General', item:'New item', estimated:0, actual:0, paid:false, notes:''});
+    addDoc('budget', {category:'General', item:'New item', estimated:0, actual:0, paid:false, notes:''}, '.f-item');
   });
 
   function renderBudget(){
@@ -1225,7 +1326,7 @@
     taskFilter = e.target.value; renderTasks();
   });
   document.getElementById('add-task').addEventListener('click', function(){
-    addDoc('tasks', {title:'New task', assignee:'', dueDate:'', done:false, notes:''});
+    addDoc('tasks', {title:'New task', assignee:'', dueDate:'', done:false, notes:''}, '.f-title');
   });
 
   function renderTasks(){
@@ -1259,7 +1360,7 @@
 
   // ---------- Vendors ----------
   document.getElementById('add-vendor').addEventListener('click', function(){
-    addDoc('vendors', {name:'New vendor', category:'Catering', contact:'', notes:''});
+    addDoc('vendors', {name:'New vendor', category:'Catering', contact:'', notes:''}, '.f-name');
   });
 
   function renderVendors(){
@@ -1289,6 +1390,30 @@
       card.querySelector('.del').addEventListener('click', function(){
         if(confirm('Remove this vendor?')) deleteDoc('vendors', id);
       });
+    });
+  }
+
+  // ---------- PWA: install prompt + service worker ----------
+  var installBtn = document.getElementById('install-app-btn');
+  var deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    installBtn.style.display = 'inline-block';
+  });
+  installBtn.addEventListener('click', function(){
+    if(!deferredInstallPrompt) return;
+    installBtn.style.display = 'none';
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.finally(function(){ deferredInstallPrompt = null; });
+  });
+  window.addEventListener('appinstalled', function(){
+    installBtn.style.display = 'none';
+    toast('Installed — find it on your home screen.');
+  });
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(e){ console.error('SW registration failed', e); });
     });
   }
 
